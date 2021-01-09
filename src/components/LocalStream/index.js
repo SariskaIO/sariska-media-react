@@ -7,7 +7,7 @@ const LocalStream = props=> {
     return (
         <div className="localStream">
             {localTracks.map((track, idx) => {
-                return track.isVideoTrack() ? <Video key={idx} track={track}/> : <Audio key={idx} track={track}/>
+                return track.isVideoTrack() && <Video key={idx} track={track}/>
             })}
         </div>
     );

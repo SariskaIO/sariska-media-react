@@ -8,7 +8,7 @@ export async function getToken() {
         },
         body: JSON.stringify({
             sessionId: "test6we9999j9e8", // enter your sessionId
-            apiKey: "24fd6f92d6d017492e3e98e334ebafc76dd350bb93a0729d38", // enter your app secret
+            apiKey: "27936faa8ad60e4a3d3ac2b422eca58f6cc855a99fb42aca3ed4", // enter your app secret
             // user: {  Optionally, you can provide user display information for better tracking and user experience
             //     id: <user_id>
             //     name: <user_name>,
