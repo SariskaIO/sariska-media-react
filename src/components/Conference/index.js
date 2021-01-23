@@ -11,14 +11,18 @@ const Conference = props=> {
     const [localTracks, setLocalTracks] = useState([]);
     const [remoteTracks, setRemoteTracks] = useState([]);
 
-    useEffect(()=> {
-        JitsiMeetJS.createLocalTracks({devices:["audio", "video"], resolution: "180"}).
-        then(tracks => {
+    useEffect(() => {
+        if (room && room.isJoined() && localTracks.length) {
+            return localTracks.forEach(track => room.addTrack(track).catch(err => console.log("track is already added")));
+        }
+        JitsiMeetJS.createLocalTracks({devices: ["audio", "video"], resolution: "180"}).then(tracks => {
             setLocalTracks(tracks);
-            room && tracks.forEach(track=>room.addTrack(track).catch(err =>console.log("track already added")));
-        }).
-        catch(()=>console.log("failed to fetch tracks"));
-    } ,[room]);
+            if (room && room.isJoined()) {
+                tracks.forEach(track => room.addTrack(track).catch(err => console.log("track is already added")));
+            }
+        }).catch((e) => console.log(e, "failed to fetch tracks"));
+
+    }, [room]);
 
     useEffect(() => {
         const {connection} = props;
@@ -26,10 +30,10 @@ const Conference = props=> {
             return;
         }
 
-        window.addEventListener('beforeunload', beforeUnload);
+        window.addEventListener('beforeunload', leave);
         const room = connection.initJitsiConference(conferenceConfig);
 
-        function beforeUnload(event) {
+        function leave(event) {
             if (room && room.isJoined()) {
                 room.leave().then(() => connection.disconnect(event));
             }
@@ -56,7 +60,7 @@ const Conference = props=> {
         room.join();
 
         return ()=> {
-            beforeUnload();
+            leave();
         }
     }, [connection]);
 

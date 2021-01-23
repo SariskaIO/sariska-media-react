@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "sariska-media-transport": "git+https://github.com/brajendrak00068/sariska-media-transport.git",
     "mini-css-extract-plugin": "^1.1.1",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "sariska-media-transport": "git+https://github.com/SariskaIO/sariska-media-transport.git"
   },
   "scripts": {
     "webpack-dev-server": "webpack-dev-server",
