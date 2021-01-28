@@ -16,6 +16,7 @@ const Conference = props=> {
             return localTracks.forEach(track => room.addTrack(track).catch(err => console.log("track is already added")));
         }
         JitsiMeetJS.createLocalTracks({devices: ["audio", "video"], resolution: "180"}).then(tracks => {
+            console.log('tracks', tracks);
             setLocalTracks(tracks);
             if (room && room.isJoined()) {
                 tracks.forEach(track => room.addTrack(track).catch(err => console.log("track is already added")));
