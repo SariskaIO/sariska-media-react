@@ -4,10 +4,11 @@ import Audio from "../../components/Audio";
 
 const RemoteStream = props=> {
     const {remoteTracks} = props;
+
     return (
         <div className="remoteStream">
             {remoteTracks.map((track, idx) => {
-                return track.isVideoTrack() ? <Video key={idx} track={track}/> : <Audio key={idx} track={track}/>
+                return track.isVideoTrack() ? <Video key={track.track.id} track={track}/> : <Audio key={track.track.id} track={track}/>
             })}
         </div>
     );

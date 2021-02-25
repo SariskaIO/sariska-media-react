@@ -44,14 +44,14 @@ const Conference = props=> {
         }
 
         const onTrackRemoved = (track)=> {
-            setRemoteTracks(remoteTracks.filter(item => item.track.id !== track.track.id));
+            setRemoteTracks(tracks=>tracks.filter(item=>item.track.id !== track.track.id));
         }
 
         const onRemoteTrack = (track)=> {
             if (!track  || track.isLocal()) {
                 return;
             }
-            setRemoteTracks(remoteTracks => [...remoteTracks, track]);
+            setRemoteTracks(tracks=>[...tracks, track]);
         }
 
         room.on(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, onConferenceJoined);

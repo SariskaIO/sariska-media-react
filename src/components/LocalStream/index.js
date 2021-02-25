@@ -1,13 +1,12 @@
 import React from 'react';
 import Video from "../../components/Video";
-import Audio from "../../components/Audio";
 
 const LocalStream = props=> {
     const {localTracks} = props;
     return (
         <div className="localStream">
             {localTracks.map((track, idx) => {
-                return track.isVideoTrack() && <Video key={idx} track={track}/>
+                return track.isVideoTrack() && <Video key={track.track.id} track={track}/>
             })}
         </div>
     );
