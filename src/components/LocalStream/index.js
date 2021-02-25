@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import Video from "../../components/Video";
 import Audio from "../../components/Audio";
 

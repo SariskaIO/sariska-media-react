@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react';
-import JitsiMeetJS from "sariska-media-transport";
+import React  from 'react';
 import Video from "../../components/Video";
 import Audio from "../../components/Audio";
 

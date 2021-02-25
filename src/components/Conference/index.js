@@ -1,5 +1,5 @@
-import React, {Fragment, useEffect, useState} from 'react';
-import JitsiMeetJS from "sariska-media-transport";
+import React, { useEffect, useState} from 'react';
+import SariskaMediaTransport from "sariska-media-transport";
 import RemoteStream from "../../components/RemoteStream";
 import LocalStream from "../../components/LocalStream";
 import {conferenceConfig} from "../../constants";
@@ -15,7 +15,7 @@ const Conference = props=> {
         if (room && room.isJoined() && localTracks.length) {
             return localTracks.forEach(track => room.addTrack(track).catch(err => console.log("track is already added")));
         }
-        JitsiMeetJS.createLocalTracks({devices: ["audio", "video"], resolution: "180"}).then(tracks => {
+        SariskaMediaTransport.createLocalTracks({devices: ["audio", "video"], resolution: "180"}).then(tracks => {
             setLocalTracks(tracks);
             if (room && room.isJoined()) {
                 tracks.forEach(track => room.addTrack(track).catch(err => console.log("track is already added")));
@@ -46,7 +46,7 @@ const Conference = props=> {
         const onTrackRemoved = (track)=> {
             setRemoteTracks(remoteTracks.filter(item => item.track.id !== track.track.id));
         }
-   
+
         const onRemoteTrack = (track)=> {
             if (!track  || track.isLocal()) {
                 return;
@@ -54,9 +54,9 @@ const Conference = props=> {
             setRemoteTracks(remoteTracks => [...remoteTracks, track]);
         }
 
-        room.on(JitsiMeetJS.events.conference.CONFERENCE_JOINED, onConferenceJoined);
-        room.on(JitsiMeetJS.events.conference.TRACK_ADDED, onRemoteTrack);
-        room.on(JitsiMeetJS.events.conference.TRACK_REMOVED, onTrackRemoved);
+        room.on(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, onConferenceJoined);
+        room.on(SariskaMediaTransport.events.conference.TRACK_ADDED, onRemoteTrack);
+        room.on(SariskaMediaTransport.events.conference.TRACK_REMOVED, onTrackRemoved);
         room.join();
 
         return ()=> {
