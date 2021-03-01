@@ -31,7 +31,6 @@ const Connection = props=> {
         }
 
         const onConnectionDisconnected = (error)=>{
-            console.log('connection disconnect!!!', error);
             if (!connection) {
                 return;
             }
@@ -48,8 +47,7 @@ const Connection = props=> {
         }
 
         const onConnectionFailed = async (error)=> {
-            console.log('connection failed!!!', error);
-            if (error === "connection.passwordRequired") {  // token expired,  fetch new token and set again
+            if (error === SariskaMediaTransport.connection.error.PASSWORD_REQUIRED) {  // token expired,  fetch new token and set again
                 const token = await getToken();
                 conn.setToken(token);
             }
