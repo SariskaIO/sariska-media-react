@@ -34,20 +34,21 @@ export const conferenceConfig = {
     // confID - Used for statistics to identify conference, if tenants are supported will contain tenant and the non lower case variant for the room name.
     // siteID - (optional) Used for statistics to identify the site where the user is coming from, if tenants are supported it will contain a unique identifier for that tenant. If not provided, the value will be infered from confID
     // statisticsId - The id to be used as stats instead of default callStatsUsername.
-    // statisticsDisplayName - The display name to be used for stats, used for callstats.
+    // statisticsDisplayName: 'Guru',
+     //The display name to be used for stats, used for callstats.
     // focusUserJid - The real JID of focus participant - can be overridden here
     // enableNoAudioDetection
-    // enableNoisyMicDetection
+    //enableNoisyMicDetection: true,
     // enableRemb
     // enableTcc
     // useRoomAsSharedDocumentName
-    // channelLastN
+    //channelLastN: 2,
     // startBitrate
     // stereo
     // forceJVB121Ratio - "Math.random() < forceJVB121Ratio" will determine whether a 2 people conference should be moved to the JVB instead of P2P. The decision is made on the responder side, after ICE succeeds on the P2P connection.
     // hiddenDomain
     // startAudioMuted
-    // startVideoMuted
+    //startVideoMuted: true,
     // enableLayerSuspension - if set to 'true', we will cap the video send bitrate when we are told we have not been selected by any endpoints (and therefore the non-thumbnail streams are not in use).
     // deploymentInfo
     // shard
@@ -77,12 +78,12 @@ export const conferenceConfig = {
         // through the JVB and use the peer to peer connection instead. When a
         // 3rd participant joins the conference will be moved back to the JVB
         // connection.
-        enabled: false,
+        enabled: true,
 
         // The STUN servers that will be used in the peer to peer connections
-        // stunServers: [
-        //    { urls: 'stun.l.google.com:19302' }
-        //]
+        stunServers: [
+           { urls: 'stun.l.google.com:19302' }
+        ],
 
         // Sets the ICE transport policy for the p2p connection. At the time
         // of this writing the list of possible values are 'all' and 'relay',
@@ -90,7 +91,7 @@ export const conferenceConfig = {
         // the WebRTC standard:
         // https://www.w3.org/TR/webrtc/#rtcicetransportpolicy-enum.
         // If not set, the effective value is 'all'.
-        // iceTransportPolicy: 'all',
+         iceTransportPolicy: 'all',
 
         // Provides a way to set the video codec preference on the p2p connection. Acceptable
         // codec values are 'VP8', 'VP9' and 'H264'.

@@ -1,6 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import Conference from "../../components/Conference";
-import JitsiMeetJS from "sariska-media-transport";
+import SariskaMediaTransport from "sariska-media-transport";
 import {connectionConfig, initSDKConfig} from "../../constants";
 import {getToken, getL} from "../../utils";
 
@@ -9,58 +9,59 @@ const Connection = props=> {
     const [connection, setConnection] = useState(null);
 
     useEffect(() => {
-        JitsiMeetJS.init(initSDKConfig);
-        JitsiMeetJS.setLogLevel(JitsiMeetJS.logLevels.ERROR); //TRACE ,DEBUG, INFO, LOG, WARN, ERROR
+        SariskaMediaTransport.init(initSDKConfig);
+        SariskaMediaTransport.setLogLevel(SariskaMediaTransport.logLevels.ERROR); //TRACE ,DEBUG, INFO, LOG, WARN, ERROR
         let conn;
 
         const fetchData =  async ()=>{
             const token = await getToken();
+            console.log('token', token);
             if (!token) {
                 return;
             }
-            conn = new JitsiMeetJS.JitsiConnection(token, connectionConfig);
-            conn.addEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
-            conn.addEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
-            conn.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, onConnectionDisconnected);
-            conn.addEventListener(JitsiMeetJS.events.connection.PASSWORD_REQUIRED, onConnectionDisconnected);
+            conn = new SariskaMediaTransport.JitsiConnection(token, connectionConfig);
+            conn.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
+            conn.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_FAILED, onConnectionFailed);
+            conn.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_DISCONNECTED, onConnectionDisconnected);
+            conn.addEventListener(SariskaMediaTransport.events.connection.PASSWORD_REQUIRED, onConnectionDisconnected);
             conn.connect();
         }
 
         const onConnectionSuccess = ()=>{
             setConnection(conn);
+            console.log('conn iss', connection);
+
         }
 
         const onConnectionDisconnected = (error)=>{
-            console.log('connection disconnect!!!', error);
             if (!connection) {
                 return;
             }
             connection.removeEventListener(
-                JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
+                SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED,
                 onConnectionSuccess);
             connection.removeEventListener(
-                JitsiMeetJS.events.connection.CONNECTION_FAILED,
+                SariskaMediaTransport.events.connection.CONNECTION_FAILED,
                 onConnectionFailed);
             connection.removeEventListener(
-                JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED,
+                SariskaMediaTransport.events.connection.CONNECTION_DISCONNECTED,
                 onConnectionDisconnected);
 
         }
 
         const onConnectionFailed = async (error)=> {
-            console.log('connection failed!!!', error);
-            if (error === "connection.passwordRequired") {  // token expired,  fetch new token and set again
+            if (error === SariskaMediaTransport.connection.error.PASSWORD_REQUIRED) {  // token expired,  fetch new token and set again
                 const token = await getToken();
                 conn.setToken(token);
             }
         }
 
         const updateNetwork = ()=>{  //  set internet connectivity status
-            JitsiMeetJS.setNetworkInfo({isOnline: window.navigator.onLine});
+            SariskaMediaTransport.setNetworkInfo({isOnline: window.navigator.onLine});
         }
 
         fetchData();
-        
+
         window.addEventListener("offline", updateNetwork);
         window.addEventListener("online", updateNetwork);
 
@@ -72,7 +73,9 @@ const Connection = props=> {
     }, []);
 
 
-    return (<Conference connection={connection}/>);
+    return (
+    <Conference connection={connection}/>
+    );
 }
 
 export default Connection;

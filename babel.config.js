@@ -20,12 +20,6 @@ module.exports = function(api) {
                             }
                         }
                     ]
-        ],
-        plugins: [
-            "@babel/plugin-transform-flow-strip-types",
-            "@babel/plugin-proposal-class-properties",
-            "@babel/plugin-proposal-optional-chaining",
-            "@babel/plugin-proposal-export-namespace-from"
         ]
     }
 };
