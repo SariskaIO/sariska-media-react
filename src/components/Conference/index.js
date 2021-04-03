@@ -10,19 +10,7 @@ const Conference = props=> {
     const [room, setRoom] = useState(null);
     const [localTracks, setLocalTracks] = useState([]);
     const [remoteTracks, setRemoteTracks] = useState([]);
-
-    useEffect(() => {
-        if (room && room.isJoined() && localTracks.length) {
-            return localTracks.forEach(track => room.addTrack(track).catch(err => console.log("track is already added")));
-        }
-        SariskaMediaTransport.createLocalTracks({devices: ["audio", "video"], resolution: "180"}).then(tracks => {
-            setLocalTracks(tracks);
-            if (room && room.isJoined()) {
-                tracks.forEach(track => room.addTrack(track).catch(err => console.log("track is already added")));
-            }
-        }).catch((e) => console.log(e, "failed to fetch tracks"));
-
-    }, [room]);
+    const [status, setStatus] = useState("calling");
 
     useEffect(() => {
         const {connection} = props;
@@ -32,15 +20,18 @@ const Conference = props=> {
 
         window.addEventListener('beforeunload', leave);
         const room = connection.initJitsiConference(conferenceConfig);
-
+     
         function leave(event) {
             if (room && room.isJoined()) {
                 room.leave().then(() => connection.disconnect(event));
             }
         }
 
-        const onConferenceJoined = ()=> {
+        const onConferenceJoined = async ()=> {
             setRoom(room);
+            const localTracks = await SariskaMediaTransport.createLocalTracks({devices: ["video", "audio"], resolution: "180"});
+            localTracks.forEach(track=>room.addTrack(track));
+            setLocalTracks(localTracks);
         }
 
         const onTrackRemoved = (track)=> {
@@ -57,6 +48,10 @@ const Conference = props=> {
         room.on(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, onConferenceJoined);
         room.on(SariskaMediaTransport.events.conference.TRACK_ADDED, onRemoteTrack);
         room.on(SariskaMediaTransport.events.conference.TRACK_REMOVED, onTrackRemoved);
+        room.on(SariskaMediaTransport.events.conference.USER_JOINED, (id, track)=>console.log('USER_JOINED',id, track));
+        room.on(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, (message, a, b, c)=>{ });
+
+
         room.join();
 
         return ()=> {
@@ -65,7 +60,11 @@ const Conference = props=> {
     }, [connection]);
 
     return (
-        <div><LocalStream localTracks={localTracks}/><RemoteStream remoteTracks={remoteTracks}/></div>
+        <div>
+           <button onClick={()=>{room.startTranscriber();}}>start transcription</button>
+            {status}
+            <LocalStream localTracks={localTracks}/><RemoteStream remoteTracks={remoteTracks}/>
+        </div>
     );
 }
 
