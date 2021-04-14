@@ -1,25 +1,19 @@
-import React, { useEffect, useState }  from 'react';
+import React, { useContext, useEffect, useState }  from 'react';
 import Video from "../../components/Video";
 import Audio from "../../components/Audio";
+import { ParticipantContext } from '../../store/participantContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { addParticipantsIdsList, getParticipants } from '../../store/actions/participantActions';
 
 const RemoteStream = props=> {
     const {remoteTracks, room} = props;
-    const [idr, setIdr]=useState([]);
-    useEffect(()=>{
-        if(room) {
-            const participants=room.getParticipants();
-            console.log('participantr', participants);
-            participants.forEach((participant)=> {
-                console.log('participantr ind', participant);
-                setIdr(idr=> [...idr, participant._id]);
-                //room.kickParticipant(part[1])
-            })
-        }
+    const participantList= useSelector(state=>state.participants.participantList);
+    const dispatch = useDispatch();
 
-    },[room])
-    console.log('rem', remoteTracks);
+    
     return (
         <div className="remoteStream">
+            <div>remote role {room && room.getRole()}</div>
             {remoteTracks.map((track, idx) => {
             return track.isVideoTrack() ? <Video key={track.track.id} track={track}/> : 
                  <Audio key={track.track.id} track={track}/>

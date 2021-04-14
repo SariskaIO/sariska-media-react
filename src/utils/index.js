@@ -1,5 +1,7 @@
 import {GENERATE_TOKEN_URL} from "../constants";
 
+const tokenValue = null;
+
 export async function getToken() {
     const body = {
         method: "POST",
@@ -9,12 +11,12 @@ export async function getToken() {
         body: JSON.stringify({
             sessionId: "test6we9999j9e8", // enter your sessionId
             apiKey: "22fd6f838ddb491f3c62c0e332e5af9b74d60ebedcac379e3e", // enter your app secret
-            // user: {  Optionally, you can provide user display information for better tracking and user experience
-            //     id: <user_id>
-            //     name: <user_name>,
-            //     avatar: <user_avatar>,
-            //     email: <user_email>
-            // }
+            user: {  //Optionally, you can provide user display information for better tracking and user experience
+                 id: + new Date(),
+                name: 'gurudeep',
+            //       avatar: <user_avatar>,
+            //      email: <user_email> */
+              }
         })
     };
     try {
@@ -29,3 +31,5 @@ export async function getToken() {
         console.log('error', error);
     }
 }
+
+export default tokenValue;

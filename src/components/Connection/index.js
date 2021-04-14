@@ -1,20 +1,45 @@
-import React, {useState, useEffect, Fragment} from 'react';
+import React, {useState, useEffect} from 'react';
 import Conference from "../../components/Conference";
 import SariskaMediaTransport from "sariska-media-transport";
 import {connectionConfig, initSDKConfig} from "../../constants";
-import {getToken, getL} from "../../utils";
+import {getToken} from "../../utils";
+import { useDispatch, useSelector } from 'react-redux';
+import { isRtcstatsEnabled } from '../../features/RTC/function';
+import RTCStats from '../../features/RTC/RTCStats';
 
 const Connection = props=> {
 
     const [connection, setConnection] = useState(null);
+    const dispatch = useDispatch()
+    const {analytics} = initSDKConfig;    
 
     useEffect(() => {
+        if (isRtcstatsEnabled()) {
+            // RTCStats "proxies" WebRTC functions such as GUM and RTCPeerConnection by rewriting the global
+            // window functions. Because lib-jitsi-meet uses references to those functions that are taken on
+            // init, we need to add these proxies before it initializes, otherwise lib-jitsi-meet will use the
+            // original non proxy versions of these functions.
+            try {
+                // Default poll interval is 1000ms if not provided in the config.
+                const pollInterval = analytics.rtcstatsPollInterval || 1000;
+
+                // Initialize but don't connect to the rtcstats server wss, as it will start sending data for all
+                // media calls made even before the conference started.
+                RTCStats.init({
+                    rtcstatsEndpoint: analytics.rtcstatsEndpoint,
+                    rtcstatsPollInterval: pollInterval
+                });
+                console.log('RTCStats initialised', RTCStats);
+            } catch (error) {
+                logger.error('Failed to initialize RTCStats: ', error);
+            }
+        }
         SariskaMediaTransport.init(initSDKConfig);
         SariskaMediaTransport.setLogLevel(SariskaMediaTransport.logLevels.ERROR); //TRACE ,DEBUG, INFO, LOG, WARN, ERROR
         let conn;
 
-        const fetchData =  async ()=>{
-            const token = await getToken();
+        const fetchData = ()=>{
+            const token = window.localStorage.getItem('token');
             console.log('token', token);
             if (!token) {
                 return;
@@ -29,7 +54,6 @@ const Connection = props=> {
 
         const onConnectionSuccess = ()=>{
             setConnection(conn);
-            console.log('conn iss', connection);
 
         }
 

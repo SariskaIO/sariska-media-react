@@ -15,7 +15,15 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                use: 'babel-loader',
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        plugins: [
+                            '@babel/plugin-proposal-optional-chaining',
+                            '@babel/plugin-proposal-class-properties'
+                        ]
+                    }
+                }
             },
             {
                 test: /\.css$/,
