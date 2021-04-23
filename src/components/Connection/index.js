@@ -14,7 +14,7 @@ const Connection = props=> {
         let conn;
 
         const fetchData =  async ()=>{
-            const token = await getToken();
+            const token =  await getToken();
             if (!token) {
                 return;
             }

@@ -23,18 +23,19 @@ const Conference = props=> {
      
         function leave(event) {
             if (room && room.isJoined()) {
-                room.leave().then(() => connection.disconnect(event));
+              room.leave().then(() => connection.disconnect(event));
             }
         }
 
         const onConferenceJoined = async ()=> {
             setRoom(room);
             const localTracks = await SariskaMediaTransport.createLocalTracks({devices: ["video", "audio"], resolution: "180"});
-            localTracks.forEach(track=>room.addTrack(track));
+            localTracks.forEach(track=>room.addTrack(track).then(()=>console.log("track added success")).catch(()=>console.log("failed to add track ")));
             setLocalTracks(localTracks);
         }
 
         const onTrackRemoved = (track)=> {
+            console.log("track removed", track);
             setRemoteTracks(tracks=>tracks.filter(item=>item.track.id !== track.track.id));
         }
 
@@ -42,16 +43,20 @@ const Conference = props=> {
             if (!track  || track.isLocal()) {
                 return;
             }
+            console.log("remote track added", track);
             setRemoteTracks(tracks=>[...tracks, track]);
         }
 
+        const onUserLeft = ()=>{
+            console.log("user lef.r...");
+        }
+
         room.on(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, onConferenceJoined);
+        room.on(SariskaMediaTransport.events.conference.USER_LEFT, onUserLeft);
         room.on(SariskaMediaTransport.events.conference.TRACK_ADDED, onRemoteTrack);
         room.on(SariskaMediaTransport.events.conference.TRACK_REMOVED, onTrackRemoved);
         room.on(SariskaMediaTransport.events.conference.USER_JOINED, (id, track)=>console.log('USER_JOINED',id, track));
         room.on(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, (message, a, b, c)=>{ });
-
-
         room.join();
 
         return ()=> {
