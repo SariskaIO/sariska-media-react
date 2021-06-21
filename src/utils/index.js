@@ -1,18 +1,6 @@
 import {GENERATE_TOKEN_URL} from "../constants";
 
 export async function getToken() {
-        
-    // let user = {
-    //     id: "user_id",
-    //     name: "user_name"
-    // };
-
-    // if (window.location.search.indexOf("param")===1){
-    //    user = {
-    //             id: "user_id1",
-    //             name: "user_name1"
-    //         };
-    // };
     const body = {
         method: "POST",
         headers: {
@@ -35,21 +23,5 @@ export async function getToken() {
         }
     } catch (error) {
         console.log('error', error);
-    }
-}
-
-
-
-function isIncognito(callback){
-    var fs = window.RequestFileSystem || window.webkitRequestFileSystem;
-
-    if (!fs) {
-        callback(false);
-    } else {
-        fs(window.TEMPORARY,
-            100,
-            callback.bind(undefined, false),
-            callback.bind(undefined, true)
-        );
     }
 }

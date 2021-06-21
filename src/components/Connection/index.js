@@ -1,7 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import Conference from "../../components/Conference";
 import SariskaMediaTransport from "sariska-media-transport";
-import {connectionConfig, initSDKConfig} from "../../constants";
 import {getToken, getL} from "../../utils";
 
 const Connection = props=> {
@@ -9,16 +8,14 @@ const Connection = props=> {
     const [connection, setConnection] = useState(null);
 
     useEffect(() => {
-        SariskaMediaTransport.init(initSDKConfig);
+        SariskaMediaTransport.init();
         SariskaMediaTransport.setLogLevel(SariskaMediaTransport.logLevels.ERROR); //TRACE ,DEBUG, INFO, LOG, WARN, ERROR
         let conn;
 
         const fetchData =  async ()=>{
-            const token =  await getToken();
-            if (!token) {
-                return;
-            }
-            conn = new SariskaMediaTransport.JitsiConnection(token, connectionConfig);
+            let token =  localStorage.getItem("token");
+            token = token ? token : await getToken();
+            conn = new SariskaMediaTransport.JitsiConnection(token);
             conn.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
             conn.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_FAILED, onConnectionFailed);
             conn.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_DISCONNECTED, onConnectionDisconnected);

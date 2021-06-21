@@ -2,7 +2,6 @@ import React, { useEffect, useState} from 'react';
 import SariskaMediaTransport from "sariska-media-transport";
 import RemoteStream from "../../components/RemoteStream";
 import LocalStream from "../../components/LocalStream";
-import {conferenceConfig} from "../../constants";
 
 
 const Conference = props=> {
@@ -10,7 +9,6 @@ const Conference = props=> {
     const [room, setRoom] = useState(null);
     const [localTracks, setLocalTracks] = useState([]);
     const [remoteTracks, setRemoteTracks] = useState([]);
-    const [status, setStatus] = useState("calling");
 
     useEffect(() => {
         const {connection} = props;
@@ -19,8 +17,8 @@ const Conference = props=> {
         }
 
         window.addEventListener('beforeunload', leave);
-        const room = connection.initJitsiConference(conferenceConfig);
-     
+        const room = connection.initJitsiConference();
+
         function leave(event) {
             if (room && room.isJoined()) {
               room.leave().then(() => connection.disconnect(event));
@@ -40,10 +38,10 @@ const Conference = props=> {
         }
 
         const onRemoteTrack = (track)=> {
+            console.log("remote track added", track);
             if (!track  || track.isLocal()) {
                 return;
             }
-            console.log("remote track added", track);
             setRemoteTracks(tracks=>[...tracks, track]);
         }
 
@@ -51,12 +49,21 @@ const Conference = props=> {
             console.log("user lef.r...");
         }
 
+        const startedMuted = (a, b, c)=>{
+            console.log("startedMuted", a, b, c);
+        }
+
+        const mutedPolicyChanged = (a, b, c)=>{
+            console.log("mutedPolicyChanged", a, b, c);
+        }
+
+
         room.on(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, onConferenceJoined);
         room.on(SariskaMediaTransport.events.conference.USER_LEFT, onUserLeft);
         room.on(SariskaMediaTransport.events.conference.TRACK_ADDED, onRemoteTrack);
         room.on(SariskaMediaTransport.events.conference.TRACK_REMOVED, onTrackRemoved);
-        room.on(SariskaMediaTransport.events.conference.USER_JOINED, (id, track)=>console.log('USER_JOINED',id, track));
-        room.on(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, (message, a, b, c)=>{ });
+        room.on(SariskaMediaTransport.events.conference.STARTED_MUTED, startedMuted);
+        room.on(SariskaMediaTransport.events.conference.START_MUTED_POLICY_CHANGED, mutedPolicyChanged);
         room.join();
 
         return ()=> {
@@ -66,9 +73,12 @@ const Conference = props=> {
 
     return (
         <div>
-           <button onClick={()=>{room.startTranscriber();}}>start transcription</button>
-            {status}
-            <LocalStream localTracks={localTracks}/><RemoteStream remoteTracks={remoteTracks}/>
+            <button>start transcription</button>
+            <button>start local recording</button>
+            <button>start cloud recording</button>
+            <button>start transcription</button>
+            <LocalStream localTracks={localTracks}/>
+            <RemoteStream remoteTracks={remoteTracks}/>
         </div>
     );
 }
