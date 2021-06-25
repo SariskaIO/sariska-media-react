@@ -2,13 +2,11 @@ import React  from 'react';
 import Video from "../../components/Video";
 import Audio from "../../components/Audio";
 
-const RemoteStream = props=> {
-    const {remoteTracks} = props;
-
+const RemoteStream = props => {
     return (
         <div className="remoteStream">
-            {remoteTracks.map((track, idx) => {
-                return track.isVideoTrack() ? <Video key={track.track.id} track={track}/> : <Audio key={track.track.id} track={track}/>
+            {props.tracks.map((track, idx) => {
+                return track.getType()==="video" ? <Video key={idx} track={track}/> : <Audio key={idx} track={track}/>
             })}
         </div>
     );

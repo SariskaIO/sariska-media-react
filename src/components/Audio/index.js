@@ -1,14 +1,12 @@
 import React, {useEffect, useRef} from 'react';
 
 const Audio = props=> {
-
     const audioElementRef = useRef(null);
-    useEffect(() => {
-        const element = audioElementRef.current;
-        props.track.attach(element);
 
+    useEffect(() => {
+        props.track.attach(audioElementRef.current);
         return () => {
-            props.track.detach(element);
+            props.track.detach(audioElementRef.current);
         }
     }, [props.track]);
 

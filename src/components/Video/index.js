@@ -3,11 +3,11 @@ import './index.css';
 
 const Video  = props=> {
     const videoElementRef = useRef(null);
+
     useEffect(() => {
-        const element = videoElementRef.current;
-        props.track.attach(element);
+        props.track.attach(videoElementRef.current);
         return () => {
-            props.track.detach(element);
+            props.track.detach(videoElementRef.current);
         }
     }, [props.track]);
 

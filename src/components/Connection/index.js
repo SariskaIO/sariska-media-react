@@ -1,20 +1,19 @@
-import React, {useState, useEffect, Fragment} from 'react';
+import React, {useState, useEffect} from 'react';
 import Conference from "../../components/Conference";
 import SariskaMediaTransport from "sariska-media-transport";
-import {getToken, getL} from "../../utils";
+import {getToken} from "../../utils";
 
-const Connection = props=> {
+const Connection = () => {
 
     const [connection, setConnection] = useState(null);
 
     useEffect(() => {
-        SariskaMediaTransport.init();
+        SariskaMediaTransport.initialize();
         SariskaMediaTransport.setLogLevel(SariskaMediaTransport.logLevels.ERROR); //TRACE ,DEBUG, INFO, LOG, WARN, ERROR
         let conn;
 
-        const fetchData =  async ()=>{
-            let token =  localStorage.getItem("token");
-            token = token ? token : await getToken();
+        const createConnection = async () => {
+            let token = localStorage.getItem("token") ? localStorage.getItem("token") : await getToken();
             conn = new SariskaMediaTransport.JitsiConnection(token);
             conn.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
             conn.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_FAILED, onConnectionFailed);
@@ -23,11 +22,11 @@ const Connection = props=> {
             conn.connect();
         }
 
-        const onConnectionSuccess = ()=>{
+        const onConnectionSuccess = () => {
             setConnection(conn);
         }
 
-        const onConnectionDisconnected = (error)=>{
+        const onConnectionDisconnected = (error) => {
             if (!connection) {
                 return;
             }
@@ -40,21 +39,21 @@ const Connection = props=> {
             connection.removeEventListener(
                 SariskaMediaTransport.events.connection.CONNECTION_DISCONNECTED,
                 onConnectionDisconnected);
-
         }
 
-        const onConnectionFailed = async (error)=> {
-            if (error === SariskaMediaTransport.connection.error.PASSWORD_REQUIRED) {  // token expired,  fetch new token and set again
+        const onConnectionFailed = async (error) => {
+            console.log("error", error);
+            if (error === SariskaMediaTransport.errors.connection.PASSWORD_REQUIRED) {  // token expired,  fetch new token and set again
                 const token = await getToken();
                 conn.setToken(token);
             }
         }
 
-        const updateNetwork = ()=>{  //  set internet connectivity status
+        const updateNetwork = () => { //  set internet connectivity status
             SariskaMediaTransport.setNetworkInfo({isOnline: window.navigator.onLine});
         }
 
-        fetchData();
+        createConnection();
 
         window.addEventListener("offline", updateNetwork);
         window.addEventListener("online", updateNetwork);
@@ -63,9 +62,7 @@ const Connection = props=> {
             window.removeEventListener("offline", updateNetwork);
             window.removeEventListener("online", updateNetwork);
         };
-
     }, []);
-
 
     return (<Conference connection={connection}/>);
 }
