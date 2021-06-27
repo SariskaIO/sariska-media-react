@@ -14,7 +14,7 @@ const Conference = props => {
         if (!connection) {
             return;
         }
-        const room = connection.initJitsiConference();
+        const room = connection.initJitsiConference({ enableVirtualBackground: true });
 
         const captureLocalStream = async () => {
             const tracks = await SariskaMediaTransport.createLocalTracks({devices: ["audio", "video"]});
@@ -42,24 +42,9 @@ const Conference = props => {
             setRemoteTracks(tracks => [...tracks, track]);
         }
 
-        const onUserLeft = (id) => {
-            console.log("uonUserLeft", id);
-        }
-
-        const startedMuted = (a, b, c) => {
-            console.log("startedMuted", a, b, c);
-        }
-
-        const startedMutedPolicyChanged = (a, b, c) => {
-            console.log("mutedPolicyChanged", a, b, c);
-        }
-
         room.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, onConferenceJoined);
-        room.addEventListener(SariskaMediaTransport.events.conference.USER_LEFT, onUserLeft);
         room.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, onRemoteTrack);
         room.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, onTrackRemoved);
-        room.addEventListener(SariskaMediaTransport.events.conference.STARTED_MUTED, startedMuted);
-        room.addEventListener(SariskaMediaTransport.events.conference.START_MUTED_POLICY_CHANGED, startedMutedPolicyChanged);
 
         return () => {
             room.leave();
@@ -68,10 +53,9 @@ const Conference = props => {
 
     return (
         <div>
-            <button>start transcription</button>
-            <button>start local recording</button>
-            <button>start cloud recording</button>
-            <button>start transcription</button>
+            <button>blur background </button>
+            <button>image background</button>
+            <button>screen sharing background</button>
             <LocalStream tracks={localTracks}/>
             <RemoteStream tracks={remoteTracks}/>
         </div>
