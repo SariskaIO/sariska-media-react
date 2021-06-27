@@ -65,7 +65,7 @@ const Conference = props => {
         setConference(conference);
 
         const captureLocalStream = async () => {
-            const tracks = await SariskaMediaTransport.createLocalTracks({devices: ["audio", "video"], resolution: 240});
+            const tracks = await SariskaMediaTransport.createLocalTracks({devices: ["audio", "video"]});
             tracks.forEach(async track => await conference.addTrack(track));
             setLocalTracks(tracks);
             conference.join();
