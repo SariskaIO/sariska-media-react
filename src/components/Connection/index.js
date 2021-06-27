@@ -45,7 +45,7 @@ const Connection = () => {
             console.log("error", error);
             if (error === SariskaMediaTransport.errors.connection.PASSWORD_REQUIRED) {  // token expired,  fetch new token and set again
                 const token = await getToken();
-                conn.setToken(token);
+                connection.setToken(token);
             }
         }
 
