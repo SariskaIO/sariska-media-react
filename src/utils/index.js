@@ -8,7 +8,7 @@ export async function getToken() {
         },
         body: JSON.stringify({
             sessionId: "p4sujtyakuyi", // enter your sessionId
-            apiKey: "24fd6f9385cb04507430c9fb67e8b4ce6ac452f984b32c8328"
+            apiKey: "27fd6fc38fd60551743e97fb2eefadc379c640ae8dad2c823d"
         })
     };
 
