@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "fs": "0.0.1-security",
     "mini-css-extract-plugin": "^1.1.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -11,7 +12,8 @@
   "scripts": {
     "webpack-dev-server": "webpack-dev-server",
     "start": "webpack-dev-server --mode=development",
-    "prod": "webpack --mode=production"
+    "prod": "webpack --mode=production",
+    "deploy": "aws s3 cp dist s3://test.sariska.io --recursive --acl public-read && aws cloudfront create-invalidation --distribution-id EFQPFS761L0BH --paths / /bundle.js /index.html"
   },
   "eslintConfig": {
     "extends": "react-app"
