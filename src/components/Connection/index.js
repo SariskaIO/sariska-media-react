@@ -13,7 +13,9 @@ const Connection = () => {
         let conn;
 
         const createConnection = async () => {
-            let token = localStorage.getItem("token") ? localStorage.getItem("token") : await getToken();
+            let token = localStorage.getItem("token");
+
+            token = token ? token: await getToken();
             conn = new SariskaMediaTransport.JitsiConnection(token);
             conn.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
             conn.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_FAILED, onConnectionFailed);

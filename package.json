@@ -12,8 +12,8 @@
   "scripts": {
     "webpack-dev-server": "webpack-dev-server",
     "start": "webpack-dev-server --mode=development",
-    "prod": "webpack --mode=production",
-    "deploy": "aws s3 cp dist s3://test.sariska.io --recursive --acl public-read && aws cloudfront create-invalidation --distribution-id EFQPFS761L0BH --paths / /bundle.js /index.html"
+    "build": "webpack --mode=production",
+    "deploy": "aws s3 cp dist s3://test.sariska.io --recursive --acl public-read && aws cloudfront create-invalidation --distribution-id E2GEKJL3QWLD6E --paths / /bundle.js /index.html"
   },
   "eslintConfig": {
     "extends": "react-app"
