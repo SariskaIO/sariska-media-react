@@ -10,21 +10,21 @@ const Conference = props => {
     const [remoteTracks, setRemoteTracks] = useState([]);
     const [conference, setConference] = useState(null);
     const [effect, setEffect] = useState(null);
-
-    const cancelNoise = async ()=>{
-       await SariskaMediaTransport.effects.createRnnoiseProcessor();
-    }
-
-    const stopCancelNoise = ()=>{
-
-    }
+    const [recorderSessionId, setRecorderSessionId] = useState(null);
+    const [sipSession, setSipSession] = useState(null);
 
     const startLiveStreaming = () => {
-        conference.startLocalRecording("flac");  // can flac, wav or ogg
+
+        conference.startRecording({
+            broadcastId: "broadcastId",
+            mode: SariskaMediaTransport.constants.recording.mode.STREAM,
+            streamId: "key"
+        });
+
     }
 
     const stopLiveStreaming = () => {
-        conference.stopLocalRecording();
+        conference.stopRecording(recorderSession);
     }
 
     const startCloudRecording = () => {
@@ -41,51 +41,65 @@ const Conference = props => {
     }
 
     const stopCloudRecording = () => {
-        conference.stopLocalRecording();
+
+        conference.stopRecording(recorderSessionId);
+
     }
 
-    const startLocalRecording = () => {
-        conference.startLocalRecording("flac");  // can flac, wav or ogg
+    const startTranscription = () => {
+
+        conference.startTranscriber();
+
     }
 
-    const stopLocalRecording = () => {
-        conference.stopLocalRecording();
+    const stopTranscription = () => {
+
+        conference.stopTranscriber();
+
     }
 
-    const processScreenShot = (canvas) => {
-        var dataURL = canvas.toDataURL();
-        console.log("data", dataURL);
+
+    const startSip = () => {
+
+        conference.startSIPVideoCall('address@sip.domain.com', "someroom");
+
     }
 
-    const captureScreenShotEffect = async () => {
-        const [ desktopTrack ] = await SariskaMediaTransport.createLocalTracks({devices: ["desktop"]});
-        const effect = await SariskaMediaTransport.effects.createScreenshotCaptureEffect(processScreenShot);
-        await effect.startEffect(
-            desktopTrack.getOriginalStream(),
-            desktopTrack.videoType
-        );
+
+    const stopSip = () => {
+
+        conference.stopSIPVideoCall('address@sip.domain.com');
+
     }
 
-    const stopCaptureScreenShotEffect = async () => {
-        setEffect(effect);
+
+    const startSubtitles = () => {
+
+
+        conference.setLocalParticipantProperty("translation_language", 'hi'); // hi for hindi
+
     }
 
-    const unmuteVideoTrack = async () => {
-        localTracks[1].unmute();
+
+    const stopSubtitles = () => {
+
+        conference.setLocalParticipantProperty("requestingTranscription",   false);
+
     }
 
-    const muteVideoTrack = async () => {
-        localTracks[1].mute();
+
+    const startDialIn = () => {
+
+        conference.dial("8130017202");
+
     }
 
-    const unmuteAudioTrack = async () => {
-        localTracks[0].unmute();
-    }
 
-    const muteAudioTrack = async () => {
-        localTracks[0].mute();
-    }
+    const stopDialIn = () => {
 
+        conference.hangup();
+
+    }
 
 
     useEffect(() => {
@@ -121,24 +135,28 @@ const Conference = props => {
             setRemoteTracks(tracks => [...tracks, track]);
         }
 
-        const recorderStateChanged = (status)=>{
-            console.log("status", status);
+        const recorderStateChanged = (payload)=>{
+            console.log("status", payload);
+            if (payload._status === "pending") {
+                setRecorderSessionId(payload._sessionID);
+            }
         }
 
-        const startedMuted = (status)=>{
-            console.log("startedMuted", status);
+        const sipGatewayStateChanged = (payload)=>{
+            console.log("payload", payload);
         }
 
-        const startedMutedChanged = (status)=>{
-            console.log("startedMutedChanged", status);
+        const transcriberStateChanged = (payload)=>{
+            console.log("payload", payload);
         }
 
-        conference.addEventListener(SariskaMediaTransport.events.conference.START_MUTED_POLICY_CHANGED, startedMuted);
-        conference.addEventListener(SariskaMediaTransport.events.conference.STARTED_MUTED, startedMutedChanged);
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, onConferenceJoined);
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, onRemoteTrack);
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, onTrackRemoved);
         conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, recorderStateChanged);
+        conference.addEventListener(SariskaMediaTransport.events.conference.VIDEO_SIP_GW_SESSION_STATE_CHANGED, sipGatewayStateChanged);
+        conference.addEventListener(SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED, transcriberStateChanged);
+
         return () => {
             conference.leave();
         }
@@ -148,16 +166,21 @@ const Conference = props => {
         <div>
             <button onClick={startCloudRecording}>start cloud recording</button>
             <button onClick={stopCloudRecording}>stop cloud recording</button>
-            <button onClick={startLocalRecording}>start local recording</button>
-            <button onClick={stopLocalRecording}>stop local recording</button>
-            <button onClick={captureScreenShotEffect}>capture screenshot</button>
-            <button onClick={stopCaptureScreenShotEffect}>stop capture screenshot</button>
-            <button onClick={cancelNoise} >cancel noise</button>
-            <button onClick={stopCancelNoise} >stop noise cancellation</button>
-            <button onClick={unmuteVideoTrack} >unmute video track</button>
-            <button onClick={muteVideoTrack} >mute video track</button>
-            <button onClick={unmuteAudioTrack} >unmute audio track</button>
-            <button onClick={muteAudioTrack} >mute audio track</button>
+
+            <button onClick={startLiveStreaming}>start live streaming</button>
+            <button onClick={stopLiveStreaming}>top cloud recording</button>
+            
+            <button onClick={startTranscription}>start transcription </button>
+            <button onClick={stopTranscription}>stop transcription</button>
+            
+            <button onClick={startDialIn}>start dial in </button>
+            <button onClick={stopDialIn}>stop dial in</button>            
+
+            <button onClick={startSubtitles}>start subtitles</button>
+            <button onClick={stopSubtitles}>stop subtitles</button>            
+
+            <button onClick={startSip}>start sip</button>
+            <button onClick={stopSip}>stop sip</button>
 
             <LocalStream tracks={localTracks}/>
             <RemoteStream tracks={remoteTracks}/>
